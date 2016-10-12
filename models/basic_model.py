@@ -55,7 +55,7 @@ prefix_test = base_dir + 'test_ds5_crop'
 #  2      0.150658
 #  3      0.024853
 #  4      0.020156)
-chunk_size = 128  # * 2  # * 2
+chunk_size = 64  # * 2  # * 2
 num_chunks_train = 30000 // chunk_size * 200
 validate_every = num_chunks_train // 50
 output_every = num_chunks_train // 400
@@ -1191,7 +1191,7 @@ def build_LUCERO_model_4(): #8.7mill
 
     return l_out, l_ins
 
-def build_LUCERO_model_5(): #8.7mill
+def build_LUCERO_model_5(): #16.7mill
     '''
     Layer 1 changed filter from 5//2 to 3//1 per inception net
     Inserted Max pool at layer 10-11
@@ -1222,10 +1222,7 @@ def build_LUCERO_model_5(): #8.7mill
                          W=nn.init.Orthogonal(1.0), b=nn.init.Constant(0.1),
                          untie_biases=True)
     layers.append(l_conv)
-    
-    #layer 2
-    l_pool = MaxPool2DLayer(layers[-1], pool_size=(3, 3), stride=(2, 2))
-    layers.append(l_pool)
+
 
     #layer 3
     l_conv = Conv2DLayer(layers[-1],
@@ -1243,7 +1240,7 @@ def build_LUCERO_model_5(): #8.7mill
     
     #layer 6
     l_conv = Conv2DLayer(layers[-1],
-                         num_filters=96, filter_size=(3, 3), stride=(1, 1),
+                         num_filters=64, filter_size=(3, 3), stride=(1, 1),
                          pad='same',
                          nonlinearity=LeakyRectify(leakiness),
                          W=nn.init.Orthogonal(1.0), b=nn.init.Constant(0.1),
@@ -1287,13 +1284,6 @@ def build_LUCERO_model_5(): #8.7mill
                          untie_biases=True)
     layers.append(l_conv)
 
-    l_conv = Conv2DLayer(layers[-1],
-                         num_filters=256, filter_size=(3, 3), stride=(1, 1),
-                         pad='same',
-                         nonlinearity=LeakyRectify(leakiness),
-                         W=nn.init.Orthogonal(1.0), b=nn.init.Constant(0.1),
-                         untie_biases=True)
-    layers.append(l_conv)
     l_pool = MaxPool2DLayer(layers[-1], pool_size=(3, 3), stride=(2, 2),
                             name='coarse_last_pool')
     layers.append(l_pool)
@@ -1301,7 +1291,7 @@ def build_LUCERO_model_5(): #8.7mill
     layers.append(nn.layers.DropoutLayer(layers[-1], p=0.5))
     layers.append(DenseLayer(layers[-1],
                              nonlinearity=None,
-                             num_units=1024,
+                             num_units=512,
                              W=nn.init.Orthogonal(1.0),
                              b=nn.init.Constant(0.1),
                              name='first_fc_0'))

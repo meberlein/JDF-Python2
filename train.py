@@ -50,7 +50,7 @@ labels_train_oversample = model.labels_train_oversample
 sample_coefs = model.sample_coefs if hasattr(model, 'sample_coefs') \
     else [0, 7, 3, 22, 25]
 
-l_out, l_ins = model.build_LUCERO_model_1()
+l_out, l_ins = model.build_LUCERO_model_5()
 #l_out, l_ins = model.build_model()
 # l_ins = model.l_ins
 
