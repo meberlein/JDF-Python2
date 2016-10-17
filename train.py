@@ -19,11 +19,14 @@ from models import basic_model as model
 # theano.config.exception_verbosity = 'high'
 
 import sys
-
+#######My Config flags #########################################
 validateNow=False
 loadExistingModel = True
 existingFileNameToLoad = "Lucero_2016_10_16_084024_local_normal_512_kappalogclipped_logcutoff_0.8_reg_0.0002_0chunksUsed.pkl"
 elementOffset = 0
+boolRemovePriorDumpFile = True
+#########################################################################
+
 
 
 if len(sys.argv) > 1:
@@ -570,7 +573,10 @@ for e, (xs_chunk, y_chunk, chunk_shape) in izip(chunks_train_ids,
         ((elementInd) % validate_every) == 0 or
             ((elementInd) == num_chunks_train)):
         if elementInd != num_chunks_train: #change dump file to capture last chunk saved
+            if boolRemovePriorDumpFile:
+                os.remove(dump_path)
             dump_path = 'dumps/Lucero_' + model_id + '_' + model.config_name + '_' + str(elementInd) + 'chunksUsed.pkl'
+        
         print "\nSaving model ..."
         with open(dump_path, 'wb') as f:
             pickle.dump({
