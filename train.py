@@ -20,6 +20,12 @@ from models import basic_model as model
 
 import sys
 
+validateNow=False
+loadExistingModel = True
+existingFileNameToLoad = "Lucero_2016_10_16_084024_local_normal_512_kappalogclipped_logcutoff_0.8_reg_0.0002_0chunksUsed.pkl"
+elementOffset = 0
+
+
 if len(sys.argv) > 1:
     do_profile = int(sys.argv[1])
     print_graph = int(sys.argv[2])
@@ -50,12 +56,31 @@ labels_train_oversample = model.labels_train_oversample
 sample_coefs = model.sample_coefs if hasattr(model, 'sample_coefs') \
     else [0, 7, 3, 22, 25]
 
-l_out, l_ins = model.build_LUCERO_model_5()
-#l_out, l_ins = model.build_model()
-# l_ins = model.l_ins
 
-chunk_size = model.chunk_size
-batch_size = model.batch_size
+#use existing model to continue training
+if loadExistingModel:
+    #must be incomplete trained model
+    if existingFileNameToLoad.count("chunksUsed") > 0:
+        s = existingFileNameToLoad.split('_')[-1]
+        elementOffset = int (s.strip("chunksUsed.pkl"))
+    
+    f = open("C:\\Users\\Gargs\\workspace\\JDF Python2\\dumps\\" + existingFileNameToLoad, "rb")
+    model_data = pickle.load(f)
+    chunk_size = model_data['chunk_size']
+    batch_size = model_data['batch_size']
+    
+    l_out = model_data['l_out']
+    l_ins = model_data['l_ins']
+    
+
+#build fresh training model
+else:
+    l_out, l_ins = model.build_LUCERO_model_4()
+    chunk_size = model.chunk_size
+    batch_size = model.batch_size
+    
+
+lastChunkValidated = 0 #incase of crash, when was the last save performed
 num_chunks_train = model.num_chunks_train  # 5000
 validate_every = model.validate_every  # 50
 if hasattr(model, 'output_every'):
@@ -315,30 +340,34 @@ diag_out = theano.function(
 for e, (xs_chunk, y_chunk, chunk_shape) in izip(chunks_train_ids,
                                                 create_train_gen()):
     print "  Time waited: %.2f s.\n" % (time.time() - prev_time)
-
+    
+    #If training has already been run against the model, offset e
+    elementInd = e + elementOffset + 1  
+    #All instances of e + 1 changed to elementInd
+    
     print "Chunk %d/%d (next validation is in %d chunks)" % (
-        e + 1, num_chunks_train,
-        validate_every - ((e + 1) % validate_every)
+        elementInd, num_chunks_train,
+        validate_every - ((elementInd) % validate_every)
     )
-
+    
     # Linear lr decay every 50 chunks. TODO: cleanup
-    if lr_decay == 'linear' and e % 50 == 0:
+    if lr_decay == 'linear' and (elementInd-1) % 50 == 0:
         lr = np.float32(
             lr_init - (lr_init - lr_final) *
-            e / float(num_chunks_train)
+            (elementInd-1) / float(num_chunks_train)
         )
         print "  setting learning rate to %.7f (linear)\n" % lr
         learning_rate.set_value(lr)
-    elif lr_decay == 'exp' and e % 50 == 0:
+    elif lr_decay == 'exp' and (elementInd-1) % 50 == 0:
         lr = np.float32(
             lr_init * (lr_final /
-                       float(lr_init)) ** (e / float(num_chunks_train))
+                       float(lr_init)) ** ((elementInd - 1) / float(num_chunks_train))
         )
         print "  setting learning rate to %.7f (exponential)\n" % lr
         learning_rate.set_value(lr)
     else:
-        if e + 1 in LEARNING_RATE_SCHEDULE:
-            lr = np.float32(LEARNING_RATE_SCHEDULE[e + 1])
+        if elementInd in LEARNING_RATE_SCHEDULE:
+            lr = np.float32(LEARNING_RATE_SCHEDULE[elementInd])
             print "  setting learning rate to %.7f\n" % lr
             learning_rate.set_value(lr)
             print "  learning rate schedule is:\n"
@@ -364,7 +393,7 @@ for e, (xs_chunk, y_chunk, chunk_shape) in izip(chunks_train_ids,
     print "  mean training loss:\t\t%.6f" % mean_train_loss
     losses_train.append(mean_train_loss)
 
-    if ((e + 1) % output_every) == 0:
+    if ((elementInd) % output_every) == 0:
         print '\n%2s  %7s  %7s  %7s  %7s - [%7s]' % (
             'n', 'MIN', 'MEAN', 'MAX', 'STD', 'NORM',
         )
@@ -385,9 +414,10 @@ for e, (xs_chunk, y_chunk, chunk_shape) in izip(chunks_train_ids,
 
         del diag_result, layers_out, norms
 
-    if ((e + 1) % validate_every) == 0 or ((e + 1) == num_chunks_train):
+    if ((elementInd) % validate_every) == 0 or ((elementInd) == num_chunks_train) or validateNow:
         print
         print "Validating"
+        
         subsets = ["train", "valid"]
         gens = [create_eval_train_gen, create_eval_valid_gen]
 
@@ -520,8 +550,8 @@ for e, (xs_chunk, y_chunk, chunk_shape) in izip(chunks_train_ids,
     time_since_prev = now - prev_time
     prev_time = now
     est_time_left = time_since_start * \
-        ((num_chunks_train - (e + 1)) /
-         float(e + 1 - chunks_train_ids[0]))
+        ((num_chunks_train - (elementInd)) /
+         float(elementInd - chunks_train_ids[0]))
     eta = datetime.datetime.now() + \
         datetime.timedelta(seconds=est_time_left)
     eta_str = eta.strftime("%c")
@@ -536,16 +566,17 @@ for e, (xs_chunk, y_chunk, chunk_shape) in izip(chunks_train_ids,
     )
 
     # Save after every validate.
-    if (((e + 1) % save_every) == 0 or
-        ((e + 1) % validate_every) == 0 or
-            ((e + 1) == num_chunks_train)):
+    if (((elementInd) % save_every) == 0 or
+        ((elementInd) % validate_every) == 0 or
+            ((elementInd) == num_chunks_train)):
+        if elementInd != num_chunks_train: #change dump file to capture last chunk saved
+            dump_path = 'dumps/Lucero_' + model_id + '_' + model.config_name + '_' + str(elementInd) + 'chunksUsed.pkl'
         print "\nSaving model ..."
-
         with open(dump_path, 'wb') as f:
             pickle.dump({
                 'configuration': model.config_name,
                 'model_id': model_id,
-                'chunks_since_start': e,
+                'chunks_since_start': elementInd-1,
                 'time_since_start': time_since_start,
                 'batch_size': batch_size,
                 'chunk_size': chunk_size,

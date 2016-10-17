@@ -29,7 +29,7 @@ base_dir = 'F:/Research data/'
 
 
 output_size = 512  # 120
-batch_size = 32 * 2  # * 4
+batch_size = 64  # * 4
 input_height, input_width = (output_size, output_size)
 output_dim = 5
 num_channels = 3
@@ -55,7 +55,7 @@ prefix_test = base_dir + 'test_ds5_crop'
 #  2      0.150658
 #  3      0.024853
 #  4      0.020156)
-chunk_size = 64  # * 2  # * 2
+chunk_size = 128  # * 2
 num_chunks_train = 30000 // chunk_size * 200
 validate_every = num_chunks_train // 50
 output_every = num_chunks_train // 400
@@ -100,6 +100,23 @@ paired_transfos = True
 SEED = 1
 sample_coefs = [0, 7, 3, 22, 25]
 # [0, 7, 3, 22, 25] gives more even [0.25. 0.19. 0.20. 0.19. 0.18] distribution
+
+# Change train dataset to oversample other labels.
+# Total sizes:
+# (       image
+#  level
+#  0      25810
+#  1       2443
+#  2       5292
+#  3        873
+#  4        708,           image
+#  level
+#  0      0.734783
+#  1      0.069550
+#  2      0.150658
+#  3      0.024853
+#  4      0.020156
+
 switch_chunk = 60 * num_chunks_train // 100
 
 leakiness = 0.5
@@ -1030,9 +1047,9 @@ def build_LUCERO_model_3(): #24mil params
     return l_out, l_ins
 
 
-def build_LUCERO_model_4(): #8.7mill
+def build_LUCERO_model_4(): #8.7mill 128 chunk, 64 batch 
     '''
-    Layer 1 changed filter from 5//2 to 3//1 per inception net
+    Layer 1 changed filter from 
     Inserted Max pool at layer 10-11
     '''
     layers = []
@@ -1418,7 +1435,7 @@ id_train, y_train, id_valid, y_valid = split_data(train_labels, labels_split,
 #  3      0.024853
 #  4      0.020156)
 
-pl_enabled = True
+pl_enabled = True #False
 pl_softmax_temp = 2
 pl_train_coef = 5
 

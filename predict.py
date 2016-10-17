@@ -42,8 +42,6 @@ f = open("C:\\Users\\Gargs\\workspace\\JDF Python2\\dumps\\Lucero_2016_10_03_075
 model_data = pickle.load(f)
 
 
-
-
 # Setting some vars for easier ref.
 chunk_size = model_data['chunk_size'] * 2
 batch_size = model_data['batch_size']
