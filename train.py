@@ -83,7 +83,6 @@ else:
     batch_size = model.batch_size
     
 
-lastChunkValidated = 0 #incase of crash, when was the last save performed
 num_chunks_train = model.num_chunks_train  # 5000
 validate_every = model.validate_every  # 50
 if hasattr(model, 'output_every'):
