@@ -31,7 +31,7 @@ def make_thumb(image, size=(80, 80), pad=False):
 
 
 def load_image_and_process(im, im_dst, dim_dst, output_shape=(80, 80),
-                           prefix_path='F:/Research data/train_ds5_crop/',
+                           prefix_path='/mnt/41286d40-9315-4a21-acb4-9857864356c0/Charlie/TrainingSet/train_ds5_crop1',
                            transfo_params=None,
                            rand_values=None):
     picture_path = prefix_path + '/' + im + '.jpeg'
@@ -301,7 +301,7 @@ def load_image_and_process(im, im_dst, dim_dst, output_shape=(80, 80),
 def patches_gen_pairs(images, labels, p_x=80, p_y=80, num_channels=3,
                       chunk_size=1024,
                       num_chunks=100, rng=np.random,
-                      prefix_path='F:/Research data/train_ds5_crop/',
+                      prefix_path='/mnt/41286d40-9315-4a21-acb4-9857864356c0/Charlie/TrainingSet/train_ds5_crop/',
                       transfo_params=None,
                       paired_transfos=False):
     num_patients = len(images)
@@ -358,8 +358,8 @@ all_train_patient_ids = set(get_img_ids_from_iter(train_labels.image))
 def patches_gen_pairs_pseudolabel(images, labels, p_x=80, p_y=80,
                                   num_channels=3, chunk_size=1024,
                                   num_chunks=100, rng=np.random,
-                                  prefix_train='F:/Research data/train_ds5_crop/',
-                                  prefix_test='F:/Research data/test_ds5_crop/',
+                                  prefix_train='/mnt/41286d40-9315-4a21-acb4-9857864356c0/Charlie/TrainingSet/train_ds5_crop/',
+                                  prefix_test='/mnt/41286d40-9315-4a21-acb4-9857864356c0/Charlie/TrainingSet/test_ds5_crop/',
                                   transfo_params=None,
                                   paired_transfos=False):
     num_patients = len(images)
@@ -424,8 +424,8 @@ def patches_gen_pairs_pseudolabel(images, labels, p_x=80, p_y=80,
 
 def patches_gen_fixed_pairs(images, p_x=80, p_y=80, num_channels=3,
                             chunk_size=1024,
-                            prefix_train='F:/Research data/train_ds5_crop/',
-                            prefix_test='F:/Research data/test_ds5_crop/',
+                            prefix_train='/mnt/41286d40-9315-4a21-acb4-9857864356c0/Charlie/TrainingSet/train_ds5_crop/',
+                            prefix_test='/mnt/41286d40-9315-4a21-acb4-9857864356c0/Charlie/TrainingSet/test_ds5_crop/',
                             transfo_params=None,
                             paired_transfos=False):
     num_patients = len(images)
@@ -565,8 +565,8 @@ class DataLoader(object):
 
     def create_random_gen(self, images, labels, chunk_size=512,
                           num_chunks=100,
-                          prefix_train='F:/Research data/train_ds5_crop/',
-                          prefix_test='F:/Research data/test_ds5_crop/',
+                          prefix_train='/mnt/41286d40-9315-4a21-acb4-9857864356c0/Charlie/TrainingSet/train_ds5_crop/',
+                          prefix_test='/mnt/41286d40-9315-4a21-acb4-9857864356c0/Charlie/TrainingSet/test_ds5_crop/',
                           transfo_params=None,
                           buffer_size=3, num_generators=5,
                           paired_transfos=paired_transfos):
@@ -616,8 +616,8 @@ class DataLoader(object):
                                               buffer_size=buffer_size)
 
     def create_fixed_gen(self, images, chunk_size=512,
-                         prefix_train='F:/Research data/train_ds5_crop/',
-                         prefix_test='F:/Research data/test_ds5_crop/',
+                         prefix_train='/mnt/41286d40-9315-4a21-acb4-9857864356c0/Charlie/TrainingSet/train_ds5_crop/',
+                         prefix_test='/mnt/41286d40-9315-4a21-acb4-9857864356c0/Charlie/TrainingSet/test_ds5_crop/',
                          buffer_size=2,
                          transfo_params=None,
                          paired_transfos=paired_transfos):

@@ -45,9 +45,9 @@ if do_profile:
 LEARNING_RATE_SCHEDULE = model.LEARNING_RATE_SCHEDULE
 
 prefix_train = model.prefix_train if hasattr(model, 'prefix_train') else \
-    'F:/Research data/train_ds5_crop/'      #'/run/shm/train_ds2_crop/'
+    '/mnt/41286d40-9315-4a21-acb4-9857864356c0/Charlie/TrainingSet/train_ds5_crop/'      #'/run/shm/train_ds2_crop/'
 prefix_test = model.prefix_test if hasattr(model, 'prefix_test') else \
-    'F:/Research data/test_ds5_crop/'       #'/run/shm/test_ds2_crop/'
+    '/mnt/41286d40-9315-4a21-acb4-9857864356c0/Charlie/TrainingSet/test_ds5_crop/'       #'/run/shm/test_ds2_crop/'
 
 SEED = model.SEED if hasattr(model, 'SEED') else 11111
 
@@ -67,7 +67,7 @@ if loadExistingModel:
         s = existingFileNameToLoad.split('_')[-1]
         elementOffset = int (s.strip("chunksUsed.pkl"))
     
-    f = open("C:\\Users\\Gargs\\workspace\\JDF Python2\\dumps\\" + existingFileNameToLoad, "rb")
+    f = open("/mnt/41286d40-9315-4a21-acb4-9857864356c0/Charlie/JDF-Python2/dumps/" + existingFileNameToLoad, "rb")
     model_data = pickle.load(f)
     chunk_size = model_data['chunk_size']
     batch_size = model_data['batch_size']

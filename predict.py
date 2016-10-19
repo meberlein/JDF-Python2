@@ -85,7 +85,7 @@ compute_output = theano.function(
 #     prefix_path = '/run/shm/'
 
 #### added 5/3/2016
-prefix_path = 'F:/Research data/'
+prefix_path = '/mnt/41286d40-9315-4a21-acb4-9857864356c0/Charlie/TrainingSet/'
 
 
 print "Using prefix path: %s.\n" % prefix_path

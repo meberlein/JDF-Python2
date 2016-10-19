@@ -25,7 +25,7 @@ from losses import (log_loss,
 
 # Main dir used to load files.
 #base_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..')
-base_dir = 'F:/Research data/'
+base_dir = '/mnt/41286d40-9315-4a21-acb4-9857864356c0/Charlie/JDF-Python2/'
 
 
 output_size = 512  # 120

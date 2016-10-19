@@ -9,7 +9,7 @@ from skimage import io
 #train_files = list(set(glob.glob(os.path.join("train", "*.jpeg"))))
 #ds_factor = int(sys.argv[1])
 
-train_files = list(set(glob.glob("F:\\Research data\\train\\*.jpeg")))
+train_files = list(set(glob.glob("/mnt/41286d40-9315-4a21-acb4-9857864356c0/Charlie/TrainingSet/train_ds5_crop1/*.jpeg")))
 ds_factor = 5
 
 for i, img_id in enumerate(train_files):
